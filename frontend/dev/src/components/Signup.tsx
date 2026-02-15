@@ -13,31 +13,31 @@ export default function Signup() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
-      const response = await fetch('http://localhost:8000/api/auth/register', {
+      const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Include cookies
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
 
       const result = await response.json();
 
       if (response.ok) {
-        // Store user data and redirect to main page
         if (result.success && result.data?.user) {
           localStorage.setItem('user', JSON.stringify(result.data.user));
         }
-        alert('Account created successfully!');
-        // Redirect to main page
-        window.location.href = '/main';
-      } else {
-        console.error('Signup failed:', result);
-        alert(result.error || 'Signup failed');
+
+        alert(result.message || 'Account created successfully!');
+        window.location.href = '/';
+        return;
       }
+
+      console.error('Signup failed:', result);
+      alert(result.error || result.message || 'Signup failed');
     } catch (error) {
       console.error('Signup error:', error);
       alert('Something went wrong. Please try again.');
@@ -58,7 +58,7 @@ export default function Signup() {
           <h1 className="text-4xl font-bold text-white mb-2">Sign Up</h1>
           <p className="text-gray-400">Create your DevDuel account</p>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="name" className="text-white">Name</Label>
@@ -72,7 +72,7 @@ export default function Signup() {
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="email" className="text-white">Email</Label>
             <Input
@@ -85,7 +85,7 @@ export default function Signup() {
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="password" className="text-white">Password</Label>
             <Input
@@ -98,15 +98,15 @@ export default function Signup() {
               required
             />
           </div>
-          
-          <Button 
+
+          <Button
             type="submit"
             className="w-full bg-purple-600 text-white hover:bg-purple-700"
           >
             Sign Up
           </Button>
         </form>
-        
+
         <div className="text-center">
           <p className="text-gray-400">
             Already have an account?{" "}

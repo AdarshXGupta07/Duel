@@ -12,33 +12,31 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
-      const response = await fetch('http://localhost:8000/api/auth/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Include cookies
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
 
       const result = await response.json();
 
       if (response.ok) {
-        console.log('Login successful:', result);
-        // Store user data and redirect
         if (result.success && result.data?.user) {
-          // You could store user in context/state here
           localStorage.setItem('user', JSON.stringify(result.data.user));
         }
-        alert('Login successful!');
-        // Redirect to main page
-        window.location.href = '/main';
-      } else {
-        console.error('Login failed:', result);
-        alert(result.error || 'Login failed');
+
+        alert(result.message || 'Login successful!');
+        window.location.href = '/';
+        return;
       }
+
+      console.error('Login failed:', result);
+      alert(result.error || result.message || 'Login failed');
     } catch (error) {
       console.error('Login error:', error);
       alert('Something went wrong. Please try again.');
@@ -59,7 +57,7 @@ export default function Login() {
           <h1 className="text-4xl font-bold text-white mb-2">Login</h1>
           <p className="text-gray-400">Welcome back to DevDuel</p>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="email" className="text-white">Email</Label>
@@ -73,7 +71,7 @@ export default function Login() {
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="password" className="text-white">Password</Label>
             <Input
@@ -86,15 +84,15 @@ export default function Login() {
               required
             />
           </div>
-          
-          <Button 
+
+          <Button
             type="submit"
             className="w-full bg-gray-800 text-white border border-gray-600 hover:bg-gray-700"
           >
             Login
           </Button>
         </form>
-        
+
         <div className="text-center">
           <p className="text-gray-400">
             Don't have an account?{" "}
