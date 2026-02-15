@@ -6,7 +6,9 @@ const router = Router();
 
 // Public routes
 router.post('/register', registerUser);
+router.post('/signup', registerUser);
 router.post('/login', loginUser);
+router.post('/signin', loginUser);
 router.post('/refresh-token', refreshToken);
 
 // Protected routes (require authentication middleware)
