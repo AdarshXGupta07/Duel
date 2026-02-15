@@ -14,7 +14,7 @@ export default function Login() {
     e.preventDefault();
     
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('http://localhost:8000/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,7 +33,8 @@ export default function Login() {
           localStorage.setItem('user', JSON.stringify(result.data.user));
         }
         alert('Login successful!');
-        // TODO: Redirect to dashboard
+        // Redirect to main page
+        window.location.href = '/main';
       } else {
         console.error('Login failed:', result);
         alert(result.error || 'Login failed');

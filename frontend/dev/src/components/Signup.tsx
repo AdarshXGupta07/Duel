@@ -15,7 +15,7 @@ export default function Signup() {
     e.preventDefault();
     
     try {
-      const response = await fetch('/api/auth/signup', {
+      const response = await fetch('http://localhost:8000/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -27,8 +27,13 @@ export default function Signup() {
       const result = await response.json();
 
       if (response.ok) {
-        // TODO: Redirect to login or dashboard
+        // Store user data and redirect to main page
+        if (result.success && result.data?.user) {
+          localStorage.setItem('user', JSON.stringify(result.data.user));
+        }
         alert('Account created successfully!');
+        // Redirect to main page
+        window.location.href = '/main';
       } else {
         console.error('Signup failed:', result);
         alert(result.error || 'Signup failed');
