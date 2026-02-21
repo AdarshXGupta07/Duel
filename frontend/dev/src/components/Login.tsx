@@ -31,7 +31,7 @@ export default function Login() {
         }
 
         alert(result.message || 'Login successful!');
-        window.location.href = '/';
+        window.location.href = '/mainpage';
         return;
       }
 

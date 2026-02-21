@@ -208,9 +208,38 @@ const accessToken = asyncHandler(async (req:Request, res:Response) => {
   const user = await User.findById(req.user!._id).select("-password");
   res.status(200).json(new ApiResponse(200, "User retrieved successfully", user));
 });
-const updateUserProfile=asyncHandler(async(req:Request,res:Response)=>{
+const updateUserProfile = asyncHandler(async(req:Request,res:Response)=>{
   const {username,email}=req.body;
-  const user=await User.findByIdAndUpdate(req.user!._id,{username,email},{new:true});
+  const currentUserId = req.user!._id;
+
+  // Check if username already exists (excluding current user)
+  if (username) {
+    const existingUser = await User.findOne({ 
+      username, 
+      _id: { $ne: currentUserId } 
+    });
+    if (existingUser) {
+      throw new ApiError(400, "Username already taken");
+    }
+  }
+
+  // Check if email already exists (excluding current user)
+  if (email) {
+    const existingEmail = await User.findOne({ 
+      email, 
+      _id: { $ne: currentUserId } 
+    });
+    if (existingEmail) {
+      throw new ApiError(400, "Email already registered");
+    }
+  }
+
+  const user = await User.findByIdAndUpdate(
+    currentUserId, 
+    {username,email}, 
+    {new:true}
+  );
+  
   res.status(200).json(new ApiResponse(200, "User profile updated successfully", user));
 })
 const updatePassword=asyncHandler(async(req:Request,res:Response)=>{

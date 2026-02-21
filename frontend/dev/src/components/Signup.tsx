@@ -32,7 +32,7 @@ export default function Signup() {
         }
 
         alert(result.message || 'Account created successfully!');
-        window.location.href = '/';
+        window.location.href = '/mainpage';
         return;
       }
 
