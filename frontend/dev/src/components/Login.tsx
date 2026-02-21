@@ -28,6 +28,9 @@ export default function Login() {
       if (response.ok) {
         if (result.success && result.data?.user) {
           localStorage.setItem('user', JSON.stringify(result.data.user));
+          if (result.data.accessToken) {
+            localStorage.setItem('accessToken', result.data.accessToken);
+          }
         }
 
         alert(result.message || 'Login successful!');

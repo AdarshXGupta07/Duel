@@ -69,7 +69,7 @@ const registerUser = asyncHandler(async (req:Request, res:Response) => {
     .status(201)
     .cookie("accessToken", accessToken, getCookieOptions(15 * 60 * 1000)) // 15 minutes
     .cookie("refreshToken", refreshToken, getCookieOptions()) // 7 days default
-    .json(new ApiResponse(201, "User registered successfully", { user: safeUser }));
+    .json(new ApiResponse(201, "User registered successfully", { user: safeUser, accessToken }));
   });
 
 const loginUser = asyncHandler(async (req: Request, res: Response) => {
@@ -131,7 +131,7 @@ const loginUser = asyncHandler(async (req: Request, res: Response) => {
       new ApiResponse(
         200,
         "User logged in successfully",
-        { user: loggedInUser }
+        { user: loggedInUser, accessToken }
       )
     );
   });
