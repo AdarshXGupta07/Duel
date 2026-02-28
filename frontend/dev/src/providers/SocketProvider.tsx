@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
 interface SocketContextType {
@@ -13,6 +13,8 @@ const SocketContext = createContext<SocketContextType>({
   isConnected: false,
 });
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+
 export const useSocket = () => {
   return useContext(SocketContext);
 };
@@ -23,20 +25,26 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
-  useEffect(() => {
-    // Get token from localStorage or your auth store
-    const token = localStorage.getItem('token') || 'mock-jwt-token-for-testing';
+  const authToken = useMemo(() => {
+    if (typeof window === "undefined") return null;
+    return localStorage.getItem("accessToken");
+  }, []);
 
-    const socketInstance = io("http://localhost:8000", {
-      transports: ["websocket"],
-      auth: {
-        token: token
-      }
+  useEffect(() => {
+    const socketInstance = io(BACKEND_URL, {
+      withCredentials: true,
+      transports: ["websocket", "polling"],
+      auth: authToken ? { token: authToken } : undefined,
     });
 
     socketInstance.on("connect", () => {
       console.log("✅ Connected to server:", socketInstance.id);
       setIsConnected(true);
+    });
+
+    socketInstance.on("connect_error", (err) => {
+      console.error("❌ Socket connect error:", err.message);
+      setIsConnected(false);
     });
 
     socketInstance.on("disconnect", () => {
@@ -49,7 +57,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => {
       socketInstance.disconnect();
     };
-  }, []);
+  }, [authToken]);
 
   return (
     <SocketContext.Provider value={{ socket, isConnected }}>
